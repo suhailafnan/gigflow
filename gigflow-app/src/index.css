@@ -1,3 +1,9 @@
-@tailwind base;
+/* @tailwind base;
 @tailwind components;
-@tailwind utilities;
+@tailwind utilities; */
+
+/* Why @import "tailwindcss" is needed in v4
+Single entry point: In v4, Tailwind is provided as a CSS module. Adding @import "tailwindcss"; pulls in all three layers (base, components, utilities) in one line, so you don’t declare them separately anymore. */
+
+@import "tailwindcss";
+
