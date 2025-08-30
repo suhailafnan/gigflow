@@ -6,13 +6,13 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {
-      colors: { accent: { red: "#ef4444" } },
-      boxShadow: { 'pixel': '4px 4px 0 0 #ef4444' },
-    },
+    // We leave extend empty because customs are now in index.css
+    extend: {},
   },
   plugins: [],
 } satisfies Config
+
+
 
 
 // export default {

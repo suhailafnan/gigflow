@@ -4,7 +4,7 @@ async function main() {
   const [deployer] = await ethers.getSigners();
   console.log("Deployer:", deployer.address);
 
-  // 1) Deploy ReputationNFT (owner = deployer)
+  // 1) Deploy ReputationNFT
   const ReputationNFT = await ethers.getContractFactory("ReputationNFT");
   const reputationNft = await ReputationNFT.deploy(deployer.address);
   await reputationNft.waitForDeployment();
@@ -13,15 +13,22 @@ async function main() {
 
   // 2) Deploy ProjectFactory
   const ProjectFactory = await ethers.getContractFactory("ProjectFactory");
-  const factory = await ProjectFactory.deploy();
-  await factory.waitForDeployment();
-  const factoryAddr = await factory.getAddress();
+  const projectFactory = await ProjectFactory.deploy();
+  await projectFactory.waitForDeployment();
+  const factoryAddr = await projectFactory.getAddress();
   console.log("ProjectFactory:", factoryAddr);
 
-  console.log("Done.");
+  // 3) Deploy GigFlowCore
+  const GigFlowCore = await ethers.getContractFactory("GigFlowCore");
+  const gigFlowCore = await GigFlowCore.deploy(reputationAddr, factoryAddr);
+  await gigFlowCore.waitForDeployment();
+  const coreAddr = await gigFlowCore.getAddress();
+  console.log("GigFlowCore:", coreAddr);
+
+  console.log("All deployed successfully");
 }
 
 main().catch((e) => {
-  console.error(e);
+  console.error("Deployment failed:", e);
   process.exitCode = 1;
 });

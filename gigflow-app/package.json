@@ -37,5 +37,10 @@
     "typescript-eslint": "^8.39.1",
     "vite": "^7.1.2",
     "vite-plugin-pwa": "^1.0.3"
-  }
+  },
+  "workspaces": [
+    "gigflow-contracts",
+    "gigflow-app",
+    "gigflow-bot"
+  ]
 }

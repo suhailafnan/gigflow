@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom';
 
 export default function Landing() {
   return (
-    <div className="space-y-12">
+    // FIX APPLIED HERE: Added bg-black and text-white to the main container
+    <div className="space-y-12 bg-black text-white">
       <section className="text-center py-20">
         <h1 className="text-5xl font-extrabold mb-4">Ship Work. Earn Reputation.</h1>
         <p className="opacity-80 max-w-xl mx-auto">A decentralized platform for milestone-based gigs, powered by smart contracts and soulbound reputation.</p>

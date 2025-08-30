@@ -5,5 +5,27 @@
 /* Why @import "tailwindcss" is needed in v4
 Single entry point: In v4, Tailwind is provided as a CSS module. Adding @import "tailwindcss"; pulls in all three layers (base, components, utilities) in one line, so you don’t declare them separately anymore. */
 
+/* Why @import "tailwindcss" is needed in v4
+Single entry point: In v4, Tailwind is provided as a CSS module. Adding @import "tailwindcss"; pulls in all three layers (base, components, utilities) in one line, so you don’t declare them separately anymore. */
 @import "tailwindcss";
+
+@theme {
+  --color-accent-red: #ef4444;
+  --shadow-pixel: 4px 4px 0 0 var(--color-accent-red);
+}
+
+@layer base {
+  body {
+    @apply bg-black text-white font-mono;
+  }
+}
+
+@layer components {
+  .pixel-card {
+    /* These classes will now work because they are defined in @theme above */
+    @apply border border-accent-red rounded-md shadow-pixel;
+  }
+}
+
+
 
