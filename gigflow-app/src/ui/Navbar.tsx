@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-
+import WalletConnectButton from './WalletConnectButton';  
 export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-black/80 backdrop-blur border-b border-red-500">
@@ -10,6 +10,7 @@ export default function Navbar() {
           <Link to="/gigs/new" className="text-red-500">Post Gig</Link>
           <Link to="/profile">Profile</Link>
           <Link to="/auth" className="px-3 py-1 border border-red-500 rounded hover:bg-red-500">Start</Link>
+           <WalletConnectButton />
         </nav>
       </div>
     </header>

@@ -8,16 +8,33 @@
 //     <App />
 //   </StrictMode>,
 // )
+// import React from 'react';
+// import ReactDOM from 'react-dom/client';
+// import { BrowserRouter } from 'react-router-dom';
+//  import App from './App.tsx'
+// import './index.css';
+
+// ReactDOM.createRoot(document.getElementById('root')!).render(
+//   <React.StrictMode>
+//     <BrowserRouter>
+//       <App />
+//     </BrowserRouter>
+//   </React.StrictMode>
+// );
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
- import App from './App.tsx'
+import { WagmiProvider } from 'wagmi'; // note WagmiProvider, not WagmiConfig
+import { wagmiConfig } from './lib/wagmi';
+import App from './App';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <WagmiProvider config={wagmiConfig}>
       <App />
-    </BrowserRouter>
+    </WagmiProvider>
   </React.StrictMode>
 );
+
+
