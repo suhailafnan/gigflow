@@ -10,6 +10,9 @@ importers:
 
   gigflow-app:
     dependencies:
+      '@wagmi/core':
+        specifier: ^2.20.3
+        version: 2.20.3(@tanstack/query-core@5.85.5)(@types/react@19.1.11)(immer@10.0.2)(react@19.1.1)(typescript@5.8.3)(use-sync-external-store@1.4.0(react@19.1.1))(viem@2.35.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.22.4))
       ethers:
         specifier: ^6.15.0
         version: 6.15.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -1990,6 +1993,18 @@ packages:
 
   '@wagmi/core@2.20.0':
     resolution: {integrity: sha512-oKocFmaWvEEeccmb9+LtfXTO6XB0E2qmWgNK1ne0ruZWZwkcpUDJ/Fl39E6VLiz6O3n5KHA/dqT7efj2o4XOrA==}
+    peerDependencies:
+      '@tanstack/query-core': '>=5.0.0'
+      typescript: '>=5.0.4'
+      viem: 2.x
+    peerDependenciesMeta:
+      '@tanstack/query-core':
+        optional: true
+      typescript:
+        optional: true
+
+  '@wagmi/core@2.20.3':
+    resolution: {integrity: sha512-gsbuHnWxf0AYZISvR8LvF/vUCIq6/ZwT5f5/FKd6wLA7Wq05NihCvmQpIgrcVbpSJPL67wb6S8fXm3eJGJA1vQ==}
     peerDependencies:
       '@tanstack/query-core': '>=5.0.0'
       typescript: '>=5.0.4'
@@ -7754,6 +7769,21 @@ snapshots:
       - zod
 
   '@wagmi/core@2.20.0(@tanstack/query-core@5.85.5)(@types/react@19.1.11)(immer@10.0.2)(react@19.1.1)(typescript@5.8.3)(use-sync-external-store@1.4.0(react@19.1.1))(viem@2.35.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.22.4))':
+    dependencies:
+      eventemitter3: 5.0.1
+      mipd: 0.0.7(typescript@5.8.3)
+      viem: 2.35.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.22.4)
+      zustand: 5.0.0(@types/react@19.1.11)(immer@10.0.2)(react@19.1.1)(use-sync-external-store@1.4.0(react@19.1.1))
+    optionalDependencies:
+      '@tanstack/query-core': 5.85.5
+      typescript: 5.8.3
+    transitivePeerDependencies:
+      - '@types/react'
+      - immer
+      - react
+      - use-sync-external-store
+
+  '@wagmi/core@2.20.3(@tanstack/query-core@5.85.5)(@types/react@19.1.11)(immer@10.0.2)(react@19.1.1)(typescript@5.8.3)(use-sync-external-store@1.4.0(react@19.1.1))(viem@2.35.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.22.4))':
     dependencies:
       eventemitter3: 5.0.1
       mipd: 0.0.7(typescript@5.8.3)
