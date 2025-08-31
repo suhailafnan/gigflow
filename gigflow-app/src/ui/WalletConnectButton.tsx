@@ -4,7 +4,8 @@ import { useAppStore } from '../store/app';
 
 export default function WalletConnectButton() {
   const { address, isConnected } = useAccount();
-  const { connect, connectors, error, isLoading, pendingConnector } = useConnect();
+  // FIX: Destructure 'status' instead of 'isLoading' and 'pendingConnector'
+  const { connect, connectors, error, status } = useConnect();
   const { disconnect } = useDisconnect();
 
   const setSession = useAppStore((state) => state.setSession);
@@ -32,14 +33,14 @@ export default function WalletConnectButton() {
     <div>
       {connectors.map((connector) => (
         <button
-          disabled={!connector.ready || isLoading}
+          // FIX: Check if status is 'pending' to disable the button
+          disabled={status === 'pending'}
           key={connector.id}
           onClick={() => connect({ connector })}
-          className="px-4 py-2 bg-green-600 rounded hover:bg-green-500 text-white font-semibold mr-2"
+          className="px-4 py-2 bg-green-600 rounded hover:bg-green-500 text-white font-semibold mr-2 disabled:opacity-50"
         >
-          {isLoading && pendingConnector?.id === connector.id
-            ? 'Connecting...'
-            : `Connect ${connector.name}`}
+          {/* FIX: Show 'Connecting...' when the status is 'pending' */}
+          {status === 'pending' ? 'Connecting...' : `Connect ${connector.name}`}
         </button>
       ))}
       {error && <div className="mt-2 text-red-400">Error: {error.message}</div>}

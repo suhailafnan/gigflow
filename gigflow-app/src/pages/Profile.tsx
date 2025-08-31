@@ -1,29 +1,52 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { FormEvent } from 'react';
-import { useAppStore } from '../store/app';
-import type { Work } from '../store/app';
+import { useAppStore, type Work } from '../store/app';
+import { useGigFlowCore, useGigFlowData } from '../hooks/useContracts';
 
 export default function Profile() {
-  const { session, profile, upsertProfile } = useAppStore();
-  const [name, setName] = useState(profile.name);
-  const [bio, setBio] = useState(profile.bio);
+  const { session, profile: localProfile, upsertProfile } = useAppStore();
+  const { updateProfile, isPending } = useGigFlowCore();
+  const { profile: onChainProfile } = useGigFlowData();
+
+  const [name, setName] = useState(localProfile.name);
+  const [bio, setBio] = useState(localProfile.bio);
   const [skill, setSkill] = useState("");
   const [work, setWork] = useState<Work>({ title: '', url: '' });
+  const [isFreelancer, setIsFreelancer] = useState(localProfile.isFreelancer);
+  const [isClient, setIsClient] = useState(localProfile.isClient);
 
-  const handleSaveProfile = (e: FormEvent) => {
+  // Sync local UI state when on-chain data loads
+  useEffect(() => {
+    if (onChainProfile) {
+      setName(onChainProfile.name || '');
+      setBio(onChainProfile.bio || '');
+      setIsFreelancer(onChainProfile.isFreelancer || false);
+      setIsClient(onChainProfile.isClient || false);
+      upsertProfile({ ...onChainProfile });
+    }
+  }, [onChainProfile, upsertProfile]);
+
+  const handleSaveProfile = async (e: FormEvent) => {
     e.preventDefault();
-    upsertProfile({ name, bio });
+    try {
+      // In a real app, portfolioHashes would come from uploading files to AvaCloud/IPFS
+      await updateProfile(name, bio, localProfile.skills, [], isFreelancer, isClient);
+      alert("Profile successfully updated on-chain!");
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      alert("An error occurred while updating your profile.");
+    }
   };
 
   const handleAddSkill = () => {
-    if (!skill || profile.skills.includes(skill)) return;
-    upsertProfile({ skills: [...profile.skills, skill] });
+    if (!skill || localProfile.skills.includes(skill)) return;
+    upsertProfile({ skills: [...localProfile.skills, skill] });
     setSkill("");
   };
 
   const handleAddWork = () => {
     if (!work.title || !work.url) return;
-    upsertProfile({ works: [...profile.works, work] });
+    upsertProfile({ works: [...localProfile.works, work] });
     setWork({ title: '', url: '' });
   };
 
@@ -35,7 +58,19 @@ export default function Profile() {
         <form onSubmit={handleSaveProfile} className="space-y-3">
           <input value={name} onChange={(e) => setName(e.target.value)} className="w-full bg-black text-white placeholder-gray-400 border border-accent-blue p-2 rounded" placeholder="Your Name" />
           <textarea value={bio} onChange={(e) => setBio(e.target.value)} className="w-full bg-black text-white placeholder-gray-400 border border-accent-blue p-2 rounded h-24" placeholder="Short Bio" />
-          <button type="submit" className="px-4 py-2 bg-accent-blue rounded hover:opacity-90">Save Profile</button>
+          <div className="flex space-x-4 py-2">
+            <label className="flex items-center cursor-pointer">
+              <input type="checkbox" checked={isFreelancer} onChange={(e) => setIsFreelancer(e.target.checked)} className="mr-2"/>
+              I am a Freelancer
+            </label>
+            <label className="flex items-center cursor-pointer">
+              <input type="checkbox" checked={isClient} onChange={(e) => setIsClient(e.target.checked)} className="mr-2"/>
+              I am a Client
+            </label>
+          </div>
+          <button type="submit" disabled={isPending} className="px-4 py-2 bg-accent-blue rounded hover:opacity-90 disabled:opacity-50">
+            {isPending ? 'Saving to Chain...' : 'Save Profile'}
+          </button>
         </form>
       </div>
 
@@ -46,7 +81,7 @@ export default function Profile() {
           <button onClick={handleAddSkill} className="px-4 py-2 border border-accent-blue rounded hover:bg-accent-blue">Add</button>
         </div>
         <div className="flex flex-wrap gap-2 pt-2">
-          {profile.skills.map((s, i) => <span key={i} className="px-2 py-1 text-xs bg-blue-900/50 border border-accent-blue rounded">{s}</span>)}
+          {localProfile.skills.map((s, i) => <span key={i} className="px-2 py-1 text-xs bg-blue-900/50 border border-accent-blue rounded">{s}</span>)}
         </div>
       </div>
 
@@ -58,7 +93,7 @@ export default function Profile() {
         </div>
         <button onClick={handleAddWork} className="px-4 py-2 border border-accent-blue rounded hover:bg-accent-blue">Add Work</button>
         <ul className="list-disc ml-6 space-y-1 pt-2">
-          {profile.works.map((w, i) => (
+          {localProfile.works.map((w: Work, i: number) => (
             <li key={i}><a href={w.url} target="_blank" rel="noreferrer" className="text-accent-blue hover:underline">{w.title}</a></li>
           ))}
         </ul>

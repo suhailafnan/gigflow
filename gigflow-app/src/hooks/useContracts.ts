@@ -1,15 +1,16 @@
-// 
+// src/hooks/useContracts.ts
+
 import { useWriteContract, useReadContract, useAccount, useBalance } from 'wagmi';
 import { parseEther, formatEther } from 'viem';
 import { useAppStore } from '../store/app';
 import { CONTRACT_ADDRESSES, GIGFLOW_CORE_ABI } from '../lib/contracts';
-
+import type { Profile, GigListing } from '../store/app'; // Import types for casting
 
 // Custom hook for GigFlowCore contract interactions
 export function useGigFlowCore() {
   const { writeContract, isPending, isSuccess, error } = useWriteContract();
   const { address: _address } = useAccount();
-  const { setProfile, addGig: _addGig, setLoading, setError } = useAppStore();
+  const { upsertProfile, addGig: _addGig, setLoading, setError } = useAppStore();
 
   const updateProfile = async (
     name: string,
@@ -28,8 +29,7 @@ export function useGigFlowCore() {
         args: [name, bio, skills, portfolioHashes, isFreelancer, isClient],
       });
       
-      // Update local state
-      setProfile({ name, bio, skills, portfolioHashes, isFreelancer, isClient });
+      upsertProfile({ name, bio, skills, portfolioHashes, isFreelancer, isClient });
       return result;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update profile');
@@ -48,14 +48,13 @@ export function useGigFlowCore() {
         address: CONTRACT_ADDRESSES.GIGFLOW_CORE as `0x${string}`,
         abi: GIGFLOW_CORE_ABI,
         functionName: 'purchaseSubscription',
-        args: [tier === 'PRO' ? 1 : 2], // SubscriptionTier enum
+        args: [tier === 'PRO' ? 1 : 2],
         value: price,
       });
 
-      // Update local state
-      setProfile({ 
+      upsertProfile({ 
         tier, 
-        subscriptionExpiry: Date.now() + 30 * 24 * 60 * 60 * 1000 // 30 days
+        subscriptionExpiry: Date.now() + 30 * 24 * 60 * 60 * 1000
       });
       
       return result;
@@ -153,15 +152,16 @@ export function useGigFlowData() {
   });
 
   return {
-    profile,
-    userGigs,
-    freelancerGigs,
+    profile: profile as Profile | undefined,
+    userGigs: userGigs as GigListing[] | undefined,
+    freelancerGigs: freelancerGigs as GigListing[] | undefined,
   };
 }
 
 // Hook for wallet connection and balance
 export function useWallet() {
-  const { address, isConnected } = useAccount();
+  // CORRECTED: `useAccount` provides address, isConnected, and chainId
+  const { address, isConnected, chainId } = useAccount();
   const { data: balance } = useBalance({ address });
 
   const formattedBalance = balance ? formatEther(balance.value) : '0';
@@ -170,6 +170,6 @@ export function useWallet() {
     address,
     isConnected,
     balance: formattedBalance,
-    chainId: balance?.symbol,
+    chainId, // Get chainId directly from useAccount
   };
 }

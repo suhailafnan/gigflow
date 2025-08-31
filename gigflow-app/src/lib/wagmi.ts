@@ -1,17 +1,13 @@
-import { createConfig, configureChains } from 'wagmi';
+import { http, createConfig } from 'wagmi';
 import { avalancheFuji } from 'wagmi/chains';
-import { publicProvider } from 'wagmi/providers/public';
-import { InjectedConnector } from 'wagmi/connectors/injected';
-
-const { chains, publicClient } = configureChains(
-  [avalancheFuji],
-  [publicProvider()]
-);
+import { injected } from 'wagmi/connectors';
 
 export const wagmiConfig = createConfig({
-  autoConnect: true,
-  connectors: [new InjectedConnector({ chains })],
-  publicClient
+  chains: [avalancheFuji],
+  connectors: [
+    injected(),
+  ],
+  transports: {
+    [avalancheFuji.id]: http(),
+  },
 });
-
-export { chains };

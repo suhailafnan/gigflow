@@ -1,23 +1,24 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppStore } from '../store/app';
 import { useGigFlowData, useWallet } from '../hooks/useContracts';
 
 export default function Dashboard() {
-  const { session, profile, myPostedGigs, myAssignedGigs, notifications } = useAppStore();
-  const { address, balance, isConnected } = useWallet();
-  const { profile: contractProfile, userGigs, freelancerGigs } = useGigFlowData();
-  
+  // Corrected: Only destructure variables that are actually used in this component
+  const { profile, myPostedGigs, myAssignedGigs, notifications } = useAppStore();
+  const { address, balance } = useWallet();
+  const { profile: contractProfile, userGigs } = useGigFlowData();
+
   const [activeTab, setActiveTab] = useState<'overview' | 'posted' | 'assigned'>('overview');
-  
+
   const unreadNotifications = notifications.filter(n => !n.read).length;
-  
+
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
-      
+
       {/* Header with Stats */}
       <div className="grid md:grid-cols-5 gap-6">
-        
+
         {/* Wallet Info */}
         <div className="pixel-card p-6 text-center bg-gradient-to-b from-blue-900/20 to-blue-800/10">
           <div className="text-2xl font-bold text-blue-400">{balance} AVAX</div>
@@ -26,23 +27,25 @@ export default function Dashboard() {
             {address?.slice(0, 6)}...{address?.slice(-4)}
           </div>
         </div>
-        
+
         {/* Reputation Score */}
         <div className="pixel-card p-6 text-center bg-gradient-to-b from-purple-900/20 to-purple-800/10">
-          <div className="text-2xl font-bold text-purple-400">{profile.reputationScore}</div>
+          {/* Using contractProfile for on-chain data */}
+          <div className="text-2xl font-bold text-purple-400">{contractProfile?.reputationScore?.toString() || 0}</div>
           <div className="text-sm text-gray-400">Reputation NFTs</div>
           <div className="text-xs text-gray-500 mt-1">On-chain verified</div>
         </div>
-        
+
         {/* Active Gigs */}
         <div className="pixel-card p-6 text-center bg-gradient-to-b from-green-900/20 to-green-800/10">
-          <div className="text-2xl font-bold text-green-400">{myPostedGigs.length + myAssignedGigs.length}</div>
+           {/* Using contract data for active gigs */}
+          <div className="text-2xl font-bold text-green-400">{userGigs?.length || 0}</div>
           <div className="text-sm text-gray-400">Active Projects</div>
           <div className="text-xs text-gray-500 mt-1">
-            {myPostedGigs.length} posted, {myAssignedGigs.length} assigned
+             {myPostedGigs.length} posted, {myAssignedGigs.length} assigned
           </div>
         </div>
-        
+
         {/* Subscription Status */}
         <div className="pixel-card p-6 text-center bg-gradient-to-b from-yellow-900/20 to-yellow-800/10">
           <div className="text-2xl font-bold text-yellow-400">{profile.tier}</div>
@@ -51,7 +54,7 @@ export default function Dashboard() {
             {profile.tier === 'FREE' ? 'Limited features' : 'Full access'}
           </div>
         </div>
-        
+
         {/* Notifications */}
         <div className="pixel-card p-6 text-center bg-gradient-to-b from-red-900/20 to-red-800/10">
           <div className="text-2xl font-bold text-red-400">{unreadNotifications}</div>
@@ -66,34 +69,34 @@ export default function Dashboard() {
       <div className="pixel-card p-6">
         <h3 className="text-xl font-bold text-accent-red mb-4">Quick Actions</h3>
         <div className="grid md:grid-cols-4 gap-4">
-          <Link 
-            to="/gigs/new" 
+          <Link
+            to="/gigs/new"
             className="p-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg text-center hover:opacity-90 transition-opacity"
           >
             <div className="text-2xl mb-2">🚀</div>
             <div className="font-semibold">Post New Gig</div>
             <div className="text-xs opacity-80">Create project on Avalanche</div>
           </Link>
-          
-          <Link 
-            to="/gigs" 
+
+          <Link
+            to="/gigs"
             className="p-4 bg-gradient-to-r from-green-600 to-blue-600 rounded-lg text-center hover:opacity-90 transition-opacity"
           >
             <div className="text-2xl mb-2">🔍</div>
             <div className="font-semibold">Browse Gigs</div>
             <div className="text-xs opacity-80">Find work opportunities</div>
           </Link>
-          
-          <Link 
-            to="/profile" 
+
+          <Link
+            to="/profile"
             className="p-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg text-center hover:opacity-90 transition-opacity"
           >
             <div className="text-2xl mb-2">👤</div>
             <div className="font-semibold">Update Profile</div>
             <div className="text-xs opacity-80">Manage your presence</div>
           </Link>
-          
-          <button 
+
+          <button
             onClick={() => window.open('https://avacloud.io', '_blank')}
             className="p-4 bg-gradient-to-r from-red-600 to-orange-600 rounded-lg text-center hover:opacity-90 transition-opacity"
           >
@@ -106,7 +109,7 @@ export default function Dashboard() {
 
       {/* Tabbed Content */}
       <div className="pixel-card p-6">
-        
+
         {/* Tab Headers */}
         <div className="flex space-x-1 mb-6 bg-gray-800 p-1 rounded-lg">
           {(['overview', 'posted', 'assigned'] as const).map((tab) => (
@@ -128,7 +131,7 @@ export default function Dashboard() {
         {activeTab === 'overview' && (
           <div className="space-y-6">
             <div className="grid md:grid-cols-2 gap-6">
-              
+
               {/* Recent Posted Gigs */}
               <div>
                 <h4 className="font-bold text-lg mb-3 text-blue-400">Recently Posted</h4>
@@ -226,9 +229,9 @@ export default function Dashboard() {
                         }`}>
                           {gig.isActive ? 'Active' : 'Completed'}
                         </span>
-                        {gig.assignedTo && (
+                        {gig.assignee && (
                           <p className="text-xs text-gray-500 mt-1">
-                            Assigned to: {gig.assignedTo.slice(0, 8)}...
+                            Assigned to: {gig.assignee.slice(0, 8)}...
                           </p>
                         )}
                       </div>
@@ -241,8 +244,8 @@ export default function Dashboard() {
                 <div className="text-6xl mb-4">📋</div>
                 <p className="text-xl text-gray-400 mb-2">No gigs posted yet</p>
                 <p className="text-gray-500 mb-4">Start by posting your first project</p>
-                <Link 
-                  to="/gigs/new" 
+                <Link
+                  to="/gigs/new"
                   className="inline-block px-6 py-3 bg-accent-red rounded-lg font-semibold hover:opacity-90"
                 >
                   Post Your First Gig
@@ -273,7 +276,7 @@ export default function Dashboard() {
                         }`}>
                           {gig.isActive ? 'In Progress' : 'Completed'}
                         </span>
-                        <Link 
+                        <Link
                           to={`/gigs/${gig.id}`}
                           className="block text-xs text-accent-red hover:underline mt-1"
                         >
@@ -289,8 +292,8 @@ export default function Dashboard() {
                 <div className="text-6xl mb-4">💼</div>
                 <p className="text-xl text-gray-400 mb-2">No assigned gigs yet</p>
                 <p className="text-gray-500 mb-4">Browse available projects to get started</p>
-                <Link 
-                  to="/gigs" 
+                <Link
+                  to="/gigs"
                   className="inline-block px-6 py-3 bg-accent-red rounded-lg font-semibold hover:opacity-90"
                 >
                   Browse Available Gigs
